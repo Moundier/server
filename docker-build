@@ -1,0 +1,13 @@
+# Docker build 
+
+### To ensure no duplicate containers are running
+- `sudo docker ps` 
+
+### To remove previous allocated cache
+- `sudo docker system prune --all --volumes`
+
+### To start only the database and pgadmin
+- `sudo docker compose -f docker-compose-db.yml up`
+
+### To start only the API server
+- `sudo docker compose -f docker-compose-api.yml up`
