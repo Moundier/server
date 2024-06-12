@@ -35,7 +35,7 @@ public class UserService {
     var older = userRepo.findById(newer.getUserId()).orElseThrow(() -> notFound404(null));
 
     older = User.builder()
-      .userId(newer.getUserId())
+      .id(newer.getUserId())
       .firstName(newer.getFirstName())
       .lastName(newer.getLastName())
       .email(newer.getEmail())

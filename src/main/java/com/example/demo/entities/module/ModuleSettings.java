@@ -12,8 +12,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ConnectionModule {
-    
+public class ModuleSettings {
+
     private Long id;
     private String settings;
     private Boolean enabled;

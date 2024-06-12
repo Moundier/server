@@ -27,8 +27,8 @@ import lombok.NoArgsConstructor;
 public class User implements UserDetails {
 
     @Id
-    @GeneratedValue
-    private Long userId;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private Long id; // number unique
 
     @Size(min = 2, max = 30)
     private String firstName;

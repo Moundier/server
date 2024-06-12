@@ -1,6 +1,8 @@
 package com.example.demo;
 
 import java.sql.Date;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,16 +31,11 @@ public class Main {
 
     return args -> {
 
-      // String template = """
-      // REPORT
-      // ---
-      // Server: %s
-      // Author: %s
-      // """;
-
-      // var result = template.formatted("Gabriel Vieira Casanova", "https://localhost:8080");
-
-      // CoreString.logBox(result);
+      LocalTime localTime = LocalTime.now();
+      DateTimeFormatter format = DateTimeFormatter.ofPattern("HH:mm:ss");
+      String time = localTime.format(format);
+      String info = String.format(":: Current time :: %s", time);
+      System.out.println(info);
 
       List<User> USERS = List.of(
         new User(null, "nami", "namizo", "nami@gmail.com", "1234", null, new Date(0), false),
