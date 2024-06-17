@@ -1,6 +1,5 @@
 package com.example.demo;
 
-import java.sql.Date;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -11,8 +10,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import com.example.demo.entities.user.Role;
-import com.example.demo.entities.user.User;
 import com.example.demo.blueprint.auth.AuthService;
 import com.example.demo.blueprint.auth.AuthRoute.RegisterDTO;
 
@@ -31,43 +28,18 @@ public class Main {
 
     return args -> {
 
-      LocalTime localTime = LocalTime.now();
-      DateTimeFormatter format = DateTimeFormatter.ofPattern("HH:mm:ss");
-      String time = localTime.format(format);
-      String info = String.format(":: Current time :: %s", time);
-      System.out.println(info);
+      LocalTime time = LocalTime.now();
+      DateTimeFormatter pattern = DateTimeFormatter.ofPattern("HH:mm:ss");
+      String log = String.format(":: Current time :: %s", time.format(pattern));
+      System.out.println(log);
 
-      List<User> USERS = List.of(
-        new User(null, "nami", "namizo", "nami@gmail.com", "1234", null, new Date(0), false),
-        new User(null, "usop", "sogeking", "usop@gmail.com", "1234", null, new Date(0), false),
-        new User(null, "zoro", "roronoa", "zoro@gmail.com", "1234", Role.ADMIN, new Date(0), false)
-      );
+      List<String> strs = List.of("nami", "zoro", "usop");
 
-      List<User> ADMINS = List.of(
-        new User(null, "luff", "monkey", "luff@gmail.com", "1234", Role.ADMIN, new Date(0), false)
-      );
-
-      for (User user : USERS) {
-
-        RegisterDTO response = new RegisterDTO(
-            user.getFirstName(),
-            user.getLastName(),
-            user.getEmail(),
-            user.getPassword());
-
+      for (String name: strs) {
+        RegisterDTO response = new RegisterDTO(name, "__", name + "@gmail.com", "1234");
         authService.register(response);
       }
 
-      for (User admin : ADMINS) {
-
-        RegisterDTO response = new RegisterDTO(
-          admin.getFirstName(),
-          admin.getLastName(),
-          admin.getEmail(),
-          admin.getPassword());
-
-        authService.register(response);
-      }
     };
   }
 }

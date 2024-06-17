@@ -1,5 +1,6 @@
 server:
   port: 9090
+  address: 0.0.0.0
 
 spring:
 
@@ -21,7 +22,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
-    show-sql: true
+    # show-sql: true
     properties:
       hibernate:
         "[format_sql]": true

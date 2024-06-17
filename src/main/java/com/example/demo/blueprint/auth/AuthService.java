@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import com.example.demo.entities.user.Role;
 import com.example.demo.entities.user.User;
 import com.example.demo.entities.user.UserRepo;
+import com.example.demo.utils.JacksonSerializer;
+import com.example.demo.utils.Logger;
 import com.example.demo.blueprint.auth.AuthRoute.LoginDTO;
 import com.example.demo.blueprint.auth.AuthRoute.RegisterDTO;
 
@@ -47,7 +49,7 @@ public class AuthService {
         .firstName(request.firstName())
         .lastName(request.lastName())
         .email(request.email())
-        .password(hashPassword(request.password()))
+        .password(encodePassword(request.password()))
         .role(Role.USER)
         .termsAcceptedDate(new Date(0))
         .tutorialComplete(false)
@@ -66,7 +68,7 @@ public class AuthService {
       new TokensResponse(accessToken, refreshToken));
   }
 
-  public String hashPassword(String content) {
+  public String encodePassword(String content) {
     return passwordEncoder
       .encode(content)
       .toString();
@@ -75,18 +77,26 @@ public class AuthService {
   public ResponseEntity<?> login(LoginDTO request) {
     var user = userRepo.findByEmail(request.email());
 
+    System.out.println("HERE");
+
     authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(
             request.email(),
             request.password()));  // Note: dont tell the password is invalid, because it compromises email
 
+    System.out.println("HERE2");
+
+
     String accessToken = jwtService.generateAccessToken(user); // NOTE: User implements
     String refreshToken = jwtService.generateRefreshToken(user); // Todo: refactor in fronted
+    System.out.println("HERE3");
 
     TokensResponse tokensResponse = new TokensResponse(accessToken, refreshToken); 
     SignInResponse signInResponse = new SignInResponse(user, tokensResponse);
+    System.out.println("HERE4");
 
-    // System.out.println(signInResponse);
+    String userString = JacksonSerializer.toString(user);
+    Logger.info("LOGIN USER", userString);
 
     return ResponseEntity.status(HttpStatus.OK).body(signInResponse);
   }
@@ -97,7 +107,7 @@ public class AuthService {
         .firstName(request.firstName())
         .lastName(request.lastName())
         .email(request.email())
-        .password(hashPassword(request.password()))
+        .password(encodePassword(request.password()))
         .role(Role.ADMIN)
         .build();
 
@@ -105,8 +115,6 @@ public class AuthService {
 
     var accessToken = jwtService.generateAccessToken(user);
     var refreshToken = jwtService.generateRefreshToken(user);
-
-    // Output.done("Access-Token and Refresh-Token Generated");
 
     return ResponseEntity.status(HttpStatus.OK).body(
         new TokensResponse(accessToken, refreshToken));

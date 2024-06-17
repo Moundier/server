@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.entities.user.User;
 
 import jakarta.validation.Valid;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -29,7 +30,14 @@ public class AuthRoute {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginDTO request) {
-        return authService.login(request);
+        try {
+            return authService.login(request);            
+        } catch (Exception e) {
+            System.out.println("IS IT MAY DAY ");
+            System.out.println(e.getMessage());
+        }
+
+        return null;
     }
 
     @PostMapping("/privilege")
@@ -54,6 +62,7 @@ public class AuthRoute {
         TokensResponse tokens
     ) {}
 
+    @Builder
     public static record RegisterDTO(
         String firstName,
         String lastName,
