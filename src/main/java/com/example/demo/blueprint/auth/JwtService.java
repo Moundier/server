@@ -20,8 +20,6 @@ import io.jsonwebtoken.security.SignatureException;
 @Service
 public class JwtService extends JwtContract {
 
-  // NOTE: token lifetime
-
   @SuppressWarnings("unused")
   private final long SET_30_SEC = (1000 * 30);
 
@@ -69,7 +67,6 @@ public class JwtService extends JwtContract {
   }
 
   public boolean isTokenValid(String token, UserDetails userDetails) {
-    // Output.info("Token is valid");
     final String username = extractUsername(token);
     return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
   }
@@ -78,7 +75,6 @@ public class JwtService extends JwtContract {
     return extractSpecificClaim(token, Claims::getExpiration).before(new Date()); // Todo: checks if token is expired
   }
 
-  // Todo: find token by subject
   public String extractUsername(String token) {
     try {
       return extractSpecificClaim(token, Claims::getSubject);
@@ -97,7 +93,6 @@ public class JwtService extends JwtContract {
         .parseClaimsJws(token)
         .getBody();
     } catch (ExpiredJwtException e) {
-      // Output.fail("Your session has expired. Please log in again.");
       return null;
     }
   }

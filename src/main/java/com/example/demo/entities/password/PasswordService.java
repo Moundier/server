@@ -1,12 +1,14 @@
 package com.example.demo.entities.password;
 
-import java.util.Optional;
+import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.entities.storage.Storage;
-import com.example.demo.entities.storage.StorageRepo;
+import com.example.demo.helpers.Cipherify;
+import com.example.demo.helpers.Colorify;
 
 import lombok.RequiredArgsConstructor;
 
@@ -14,38 +16,49 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PasswordService {
     
-    private final StorageRepo storageRepo;
-    private final PasswordRepo passwordRepo;
+    private final Cipherify cipher;
+    private final PasswordRepo repo;
 
-    public ResponseEntity<?> createPassword(PasswordEntry payload) {
+    public ResponseEntity<?> createPassword(Password password) {
 
-        Optional<Storage> optionalStorage = storageRepo.findById(payload.storage().getId());
+        Colorify.create("Password");
 
-        if (optionalStorage.isEmpty()) return ResponseEntity.notFound().build();
-
-        Storage storage = optionalStorage.get();
-
-        Password password = Password.builder()
-        .label(payload.password().getLabel())
-        .password(payload.password().getPassword())
-        .storage(storage)
+        Password entity = Password.builder()
+        .tag(cipher.encrypt(password.getTag()))
+        .title(cipher.encrypt(password.getTitle()))
+        .storage(password.getStorage())
         .build();
 
-        storage.getPasswords().add(password);
-        storageRepo.save(storage);
+        Password obj = this.repo.save(entity);
+        obj.setTag(cipher.decrypt(obj.getTag()));
+        obj.setTitle(cipher.decrypt(obj.getTitle()));
 
-        return ResponseEntity.ok(this.passwordRepo.save(password));
+        return ResponseEntity.ok(obj);
     }
 
-    public void updatePassword() {
-
+    public ResponseEntity<?> updatePassword() {
+        return null;
     }
 
-    public void locatePassword() {
+    public ResponseEntity<?> locatePassword(Storage storage) {
+        Colorify.locate("Password");
+        
+        List<Password> passwords = repo.findByStorage(storage)
+        .stream().map((password) -> Password.builder()
+            .id(password.getId())
+            .tag(cipher.decrypt(password.getTag()))
+            .title(cipher.decrypt(password.getTitle()))
+            .storage(password.getStorage())
+            .build()
+        )
+        .toList();
 
+        return ResponseEntity.status(HttpStatus.OK).body(passwords);
     }
 
-    public void deletePassword() {
-
+    public ResponseEntity<?> deletePassword(Password password) {
+        Colorify.delete("Password");
+        repo.delete(password);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

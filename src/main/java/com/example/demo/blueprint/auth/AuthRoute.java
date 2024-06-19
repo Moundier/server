@@ -30,14 +30,7 @@ public class AuthRoute {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginDTO request) {
-        try {
-            return authService.login(request);            
-        } catch (Exception e) {
-            System.out.println("IS IT MAY DAY ");
-            System.out.println(e.getMessage());
-        }
-
-        return null;
+        return authService.login(request);            
     }
 
     @PostMapping("/privilege")
@@ -60,7 +53,7 @@ public class AuthRoute {
     public static record SignInResponse(
         User user,
         TokensResponse tokens
-    ) {}
+    ) { }
 
     @Builder
     public static record RegisterDTO(
@@ -68,7 +61,7 @@ public class AuthRoute {
         String lastName,
         String email,
         String password
-    ) {  }
+    ) { }
 
     public static record ErrorDTO (
         String error,

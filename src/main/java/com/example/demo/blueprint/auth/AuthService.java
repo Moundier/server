@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import com.example.demo.entities.user.Role;
 import com.example.demo.entities.user.User;
 import com.example.demo.entities.user.UserRepo;
-import com.example.demo.utils.JacksonSerializer;
-import com.example.demo.utils.Logger;
+import com.example.demo.helpers.Jsonify;
+import com.example.demo.helpers.Colorify;
 import com.example.demo.blueprint.auth.AuthRoute.LoginDTO;
 import com.example.demo.blueprint.auth.AuthRoute.RegisterDTO;
 
@@ -36,7 +36,6 @@ public class AuthService {
 
   public ResponseEntity<?> register(RegisterDTO request) {
 
-    // Output.info(request.toString().substring(0, size - 20) + "...");
     User found = userRepo.findByEmail(request.email());
 
     if (found != null) {
@@ -46,24 +45,20 @@ public class AuthService {
     }
 
     var user = User.builder()
-        .firstName(request.firstName())
-        .lastName(request.lastName())
-        .email(request.email())
-        .password(encodePassword(request.password()))
-        .role(Role.USER)
-        .termsAcceptedDate(new Date(0))
-        .tutorialComplete(false)
-        .build();
+      .firstName(request.firstName())
+      .lastName(request.lastName())
+      .email(request.email())
+      .password(encodePassword(request.password()))
+      .role(Role.USER)
+      .termsAcceptedDate(new Date(System.currentTimeMillis()))
+      .tutorialComplete(false)
+      .build();
 
-    if (user != null)
-      userRepo.save(user);
+    userRepo.save(user);
 
     var accessToken = jwtService.generateAccessToken(user);
     var refreshToken = jwtService.generateRefreshToken(user);
 
-    // Output.done("Access-Token and Refresh-Token Generated");
-
-    // Todo: refactor in frontend
     return ResponseEntity.status(HttpStatus.OK).body(
       new TokensResponse(accessToken, refreshToken));
   }
@@ -77,26 +72,33 @@ public class AuthService {
   public ResponseEntity<?> login(LoginDTO request) {
     var user = userRepo.findByEmail(request.email());
 
-    System.out.println("HERE");
+    // Authentication auth = authenticationManager.authenticate(
+    //   new UsernamePasswordAuthenticationToken(
+    //     request.email(),
+    //     request.password()
+    //   )
+    // );  // Note: dont tell the password is invalid, because it compromises email
+
+    // if (!auth.isAuthenticated()) {
+    //   String message = "Unauthenticated user";
+    //   return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(message);
+    // }
 
     authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(
-            request.email(),
-            request.password()));  // Note: dont tell the password is invalid, because it compromises email
-
-    System.out.println("HERE2");
-
+      new UsernamePasswordAuthenticationToken(
+        request.email(),
+        request.password()
+      )
+    );
 
     String accessToken = jwtService.generateAccessToken(user); // NOTE: User implements
     String refreshToken = jwtService.generateRefreshToken(user); // Todo: refactor in fronted
-    System.out.println("HERE3");
 
     TokensResponse tokensResponse = new TokensResponse(accessToken, refreshToken); 
     SignInResponse signInResponse = new SignInResponse(user, tokensResponse);
-    System.out.println("HERE4");
 
-    String userString = JacksonSerializer.toString(user);
-    Logger.info("LOGIN USER", userString);
+    String userString = Jsonify.toString(user);
+    Colorify.info("LOGIN USER", userString);
 
     return ResponseEntity.status(HttpStatus.OK).body(signInResponse);
   }

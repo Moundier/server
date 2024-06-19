@@ -1,9 +1,9 @@
-package com.example.demo.utils;
+package com.example.demo.helpers;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class Logger {
+public class Colorify {
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -11,7 +11,6 @@ public class Logger {
         return LocalDateTime.now().format(formatter);
     }
 
-    // ANSI escape codes for colors
     private static final String ANSI_RESET = "\u001B[0m";
     private static final String ANSI_BLUE = "\u001B[34m";
     private static final String ANSI_PURPLE = "\u001B[35m";
@@ -36,6 +35,24 @@ public class Logger {
 
     private static String getColoredPrefix(String prefix, String color) {
         return "\n" + color + prefix + ANSI_RESET;
+    }
+
+    // Default messages for CRUD operations
+    
+    public static void create(String tag) {
+        info(tag, "Create operation performed.");
+    }
+
+    public static void locate(String tag) {
+        debug(tag, "Locate operation performed.");
+    }
+
+    public static void update(String tag) {
+        info(tag, "Update operation performed.");
+    }
+
+    public static void delete(String tag) {
+        warning(tag, "Delete operation performed.");
     }
 
 }

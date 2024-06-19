@@ -1,4 +1,4 @@
-package com.example.demo.utils;
+package com.example.demo.helpers;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-public class StringUtils {
+public class Stringfy {
 
   public static String createSlug(String string) {
     if (isNullOrEmpty(string)) {
