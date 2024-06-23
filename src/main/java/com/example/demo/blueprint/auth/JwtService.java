@@ -35,6 +35,7 @@ public class JwtService extends JwtContract {
   @SuppressWarnings("unused")
   private final long SET_01_DAY = (1000 * 60 * 60 * 24);
 
+  // TODO: remove in-memory secret key
   private static final String SECRET_KEY = "DFatenFSYbaa+PaCOygVv8JtOc3d1UPv2BCIIeQ2TwGTA2EuhNQpGhszoUEN2bFR";
 
   public String generateAccessToken(UserDetails userDetails) {

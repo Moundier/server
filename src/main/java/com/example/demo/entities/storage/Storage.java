@@ -44,6 +44,6 @@ public class Storage {
     private User user;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "storage", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "storage", cascade = CascadeType.ALL)
     private List<Password> passwords;
 }

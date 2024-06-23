@@ -36,8 +36,8 @@ public class PasswordRoute {
     } 
 
     @PutMapping
-    public ResponseEntity<?>updateStorage() {
-        return service.updatePassword();
+    public ResponseEntity<?>updatePassword(@RequestBody Password password) {
+        return service.updatePassword(password);
     }
 
     @DeleteMapping

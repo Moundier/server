@@ -7,6 +7,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
+import com.example.demo.helpers.Colorify;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -30,20 +32,22 @@ public class UserService {
     return ResponseEntity.of(userRepo.findById(id));
   }
 
-  public ResponseEntity<?> edit(UserRequest newer) {
+  public ResponseEntity<?> updateUser(User newer) {
 
-    var older = userRepo.findById(newer.getUserId()).orElseThrow(() -> notFound404(null));
+    var older = userRepo.findById(newer.getId()).orElseThrow(() -> notFound404(null));
 
     older = User.builder()
-      .id(newer.getUserId())
+      .id(newer.getId())
       .firstName(newer.getFirstName())
       .lastName(newer.getLastName())
       .email(newer.getEmail())
-      .password(hashPassword(newer.getPassword()))
+      .password(older.getPassword())
       .role(older.getRole())
       .termsAcceptedDate(older.getTermsAcceptedDate())
       .tutorialComplete(older.getTutorialComplete())
       .build();
+
+    Colorify.update(older.toString());
 
     return ResponseEntity.status(HttpStatus.OK).body(userRepo.save(older));
   }

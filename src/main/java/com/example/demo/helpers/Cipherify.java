@@ -1,5 +1,6 @@
 package com.example.demo.helpers;
 
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -81,17 +82,18 @@ public class Cipherify {
   public String encrypt(String password) {
     Cipher cipher = Cipher.getInstance("RSA");
     cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-    byte[] encryptedBytes = cipher.doFinal(password.getBytes());
+    byte[] encryptedBytes = cipher.doFinal(password.getBytes(StandardCharsets.UTF_8));
     return Base64.getEncoder().encodeToString(encryptedBytes);
   }
 
   @SneakyThrows
   public String decrypt(String encryptedPassword) {
+
     byte[] encryptedBytes = Base64.getDecoder().decode(encryptedPassword);
     Cipher cipher = Cipher.getInstance("RSA");
     cipher.init(Cipher.DECRYPT_MODE, privateKey);
     byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
-    return new String(decryptedBytes);
+    return new String(decryptedBytes, StandardCharsets.UTF_8);
   }
   
 }

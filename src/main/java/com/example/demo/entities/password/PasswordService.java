@@ -1,6 +1,7 @@
 package com.example.demo.entities.password;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,8 +37,23 @@ public class PasswordService {
         return ResponseEntity.ok(obj);
     }
 
-    public ResponseEntity<?> updatePassword() {
-        return null;
+    public ResponseEntity<?> updatePassword(Password password) {
+        
+        Colorify.update("Password");
+        Optional<Password> older = repo.findById(password.getId());
+
+        if (older.isPresent()) {
+            password = Password.builder()
+            .id(password.getId())
+            .tag(password.getTag())
+            .title(password.getTitle())
+            .storage(password.getStorage())
+            .build();
+
+            return ResponseEntity.ok(this.repo.save(password));
+        }
+
+        return ResponseEntity.notFound().build();
     }
 
     public ResponseEntity<?> locatePassword(Storage storage) {

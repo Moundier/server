@@ -38,7 +38,7 @@ public class AuthRoute {
         return authService.privilege(request);
     }
 
-    @PostMapping("/refresh-token")
+    @PostMapping("/refresh")
     public ResponseEntity<?> refreshToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader) {
         return authService.refreshToken(authHeader);
     }

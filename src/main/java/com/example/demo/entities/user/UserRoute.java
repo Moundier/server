@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.helpers.Colorify;
+
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -30,14 +32,9 @@ public class UserRoute {
   }
 
   @PutMapping
-  public ResponseEntity<?> edit(@RequestBody UserRequest userModel) {
-    return userService.edit(userModel);
+  public ResponseEntity<?> updateUser(@RequestBody User user) {
+    Colorify.update(user.toString());
+    return userService.updateUser(user);
   }
 
-  // TODO: keep enpoint existence
-
-  // @DeleteMapping("/{id}")
-  // public ResponseEntity<?> wipe(@NonNull @PathVariable Long id) {
-  //   return userService.wipe(id);
-  // }
 }

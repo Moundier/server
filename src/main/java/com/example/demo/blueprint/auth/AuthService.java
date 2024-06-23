@@ -19,29 +19,28 @@ import com.example.demo.blueprint.auth.AuthRoute.RegisterDTO;
 
 import lombok.RequiredArgsConstructor;
 
-import static com.example.demo.blueprint.auth.AuthRoute.ErrorDTO;
 import static com.example.demo.blueprint.auth.AuthRoute.TokensResponse;
 import static com.example.demo.blueprint.auth.AuthRoute.SignInResponse;
 
 import java.util.Date;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
   private final UserRepo userRepo;
-  private final PasswordEncoder passwordEncoder;
   private final JwtService jwtService;
+  private final PasswordEncoder passwordEncoder;
   private final AuthenticationManager authenticationManager;
 
   public ResponseEntity<?> register(RegisterDTO request) {
 
-    User found = userRepo.findByEmail(request.email());
+    Optional<User> found = userRepo.findByEmail(request.email());
 
-    if (found != null) {
+    if (found.isPresent()) {
       final String error = "Provided email is already in use.";
-      final String message = "Please, navigate to the login section.";
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorDTO(error, message));
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
 
     var user = User.builder()
@@ -70,19 +69,14 @@ public class AuthService {
   }
 
   public ResponseEntity<?> login(LoginDTO request) {
-    var user = userRepo.findByEmail(request.email());
+    Optional<User> user = userRepo.findByEmail(request.email());
 
-    // Authentication auth = authenticationManager.authenticate(
-    //   new UsernamePasswordAuthenticationToken(
-    //     request.email(),
-    //     request.password()
-    //   )
-    // );  // Note: dont tell the password is invalid, because it compromises email
+    System.out.println(user);
 
-    // if (!auth.isAuthenticated()) {
-    //   String message = "Unauthenticated user";
-    //   return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(message);
-    // }
+    if (user.isEmpty()) {
+      String errorMessage = "User not found for email: " + request.email();
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
+    }
 
     authenticationManager.authenticate(
       new UsernamePasswordAuthenticationToken(
@@ -91,14 +85,13 @@ public class AuthService {
       )
     );
 
-    String accessToken = jwtService.generateAccessToken(user); // NOTE: User implements
-    String refreshToken = jwtService.generateRefreshToken(user); // Todo: refactor in fronted
+    String accessToken = jwtService.generateAccessToken(user.get()); // NOTE: User implements
+    String refreshToken = jwtService.generateRefreshToken(user.get()); // Todo: refactor in fronted
 
     TokensResponse tokensResponse = new TokensResponse(accessToken, refreshToken); 
-    SignInResponse signInResponse = new SignInResponse(user, tokensResponse);
+    SignInResponse signInResponse = new SignInResponse(user.get(), tokensResponse);
 
-    String userString = Jsonify.toString(user);
-    Colorify.info("LOGIN USER", userString);
+    Colorify.info("LOGIN USER", Jsonify.toString(user));
 
     return ResponseEntity.status(HttpStatus.OK).body(signInResponse);
   }
@@ -124,7 +117,6 @@ public class AuthService {
 
   public ResponseEntity<?> refreshToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader) {
 
-    // Output.info("Refresh Token Performed");
     final String refreshToken;
     final String userEmail;
 
@@ -137,13 +129,12 @@ public class AuthService {
 
     if (userEmail != null) {
 
-      User userDetails = this.userRepo.findByEmail(userEmail);
+      Optional<User> userDetails = this.userRepo.findByEmail(userEmail);
 
-      if (jwtService.isTokenValid(refreshToken, userDetails)) {
+      if (jwtService.isTokenValid(refreshToken, userDetails.get())) {
 
-        String accessToken = jwtService.generateAccessToken(userDetails);
+        String accessToken = jwtService.generateAccessToken(userDetails.get());
         TokensResponse response = new TokensResponse(accessToken, refreshToken);
-        // System.out.println(response);
         return ResponseEntity.ok(response);
       }
     }

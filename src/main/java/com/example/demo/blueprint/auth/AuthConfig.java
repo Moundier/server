@@ -22,7 +22,7 @@ public class AuthConfig {
 
     @Bean
     UserDetailsService userDetailsService() {
-        return username -> userRepo.findByEmail(username);
+        return username -> userRepo.findByEmail(username).get();
     }
 
     @Bean

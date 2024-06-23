@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.example.demo.entities.user.User;
 import com.example.demo.helpers.Cipherify;
 import com.example.demo.helpers.Colorify;
+import com.example.demo.helpers.Jsonify;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,17 +23,21 @@ public class StorageService  {
 
     public ResponseEntity<?> createStorage(Storage storage) {
         
-        Colorify.create("Storage");
+        Colorify.info("Storage", Jsonify.toString(storage));
 
         Storage entity = Storage.builder()
         .tag(cipher.encrypt(storage.getTag()))
         .title(cipher.encrypt(storage.getTitle()))
         .user(storage.getUser())
         .build();
+
+        Colorify.info("Entity", Jsonify.toString(storage));
         
         Storage obj = this.repo.save(entity);
         obj.setTag(cipher.decrypt(obj.getTag()));
         obj.setTitle(cipher.decrypt(obj.getTitle()));
+
+        Colorify.info("Object", Jsonify.toString(storage));
 
         return ResponseEntity.ok(obj);
     }
@@ -55,26 +60,32 @@ public class StorageService  {
     }
 
     public ResponseEntity<?> updateStorage(Storage storage) {
-
         Colorify.update("Storage");
-        Optional<Storage> exists = repo.findById(storage.getId());
+        Jsonify.toString(storage);
+        Optional<Storage> older = repo.findById(storage.getId());
 
-        if (exists.isPresent()) {
+        if (older.isPresent()) {
             storage = Storage.builder()
             .id(storage.getId())
-            .tag(storage.getTag())
-            .title(storage.getTitle())
+            .tag(cipher.encrypt(storage.getTag()))
+            .title(cipher.encrypt(storage.getTitle()))
             .user(storage.getUser())
             .build();
 
-            return ResponseEntity.ok(this.repo.save(storage));
+            Storage obj = this.repo.save(storage);
+            obj.setTag(cipher.decrypt(obj.getTag()));
+            obj.setTitle(cipher.decrypt(obj.getTitle()));
+
+            return ResponseEntity.ok(obj);
         }
 
         return ResponseEntity.notFound().build();
     }
     
     public ResponseEntity<?> deleteStorage(Storage storage) {
+
         Colorify.delete("Delete");
+        
         repo.deleteById(storage.getId());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.entities.user.User;
+import com.example.demo.helpers.Jsonify;
 
 import lombok.RequiredArgsConstructor;
 
@@ -30,8 +31,10 @@ public class StorageRoute {
     } 
 
     @PutMapping
-    public ResponseEntity<?>updateStorage() {
-        return service.updateStorage(null);
+    public ResponseEntity<?>updateStorage(@RequestBody Storage storage) {
+        Jsonify.toString(storage);
+
+        return service.updateStorage(storage);
     }
 
     @DeleteMapping
