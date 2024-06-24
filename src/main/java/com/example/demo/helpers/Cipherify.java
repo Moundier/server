@@ -4,16 +4,21 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 import org.springframework.stereotype.Service;
 
@@ -78,22 +83,43 @@ public class Cipherify {
     Files.write(publicKeyPath, this.publicKey.getEncoded());
   }
 
-  @SneakyThrows
   public String encrypt(String password) {
-    Cipher cipher = Cipher.getInstance("RSA");
-    cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-    byte[] encryptedBytes = cipher.doFinal(password.getBytes(StandardCharsets.UTF_8));
-    return Base64.getEncoder().encodeToString(encryptedBytes);
+    try {
+      Cipher cipher = Cipher.getInstance("RSA");
+      cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+      byte[] encryptedBytes = cipher.doFinal(password.getBytes(StandardCharsets.UTF_8));
+      return Base64.getEncoder().encodeToString(encryptedBytes);
+    } catch (NoSuchAlgorithmException e) {
+      throw new RuntimeException("Encryption failed: Algorithm not found", e);
+    } catch (NoSuchPaddingException e) {
+      throw new RuntimeException("Encryption failed: Padding not found", e);
+    } catch (InvalidKeyException e) {
+      throw new RuntimeException("Encryption failed: Invalid key", e);
+    } catch (IllegalBlockSizeException e) {
+      throw new RuntimeException("Encryption failed: Illegal block size", e);
+    } catch (BadPaddingException e) {
+      throw new RuntimeException("Encryption failed: Bad padding", e);
+    }
   }
 
-  @SneakyThrows
   public String decrypt(String encryptedPassword) {
-
-    byte[] encryptedBytes = Base64.getDecoder().decode(encryptedPassword);
-    Cipher cipher = Cipher.getInstance("RSA");
-    cipher.init(Cipher.DECRYPT_MODE, privateKey);
-    byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
-    return new String(decryptedBytes, StandardCharsets.UTF_8);
+    try {
+      byte[] encryptedBytes = Base64.getDecoder().decode(encryptedPassword);
+      Cipher cipher = Cipher.getInstance("RSA");
+      cipher.init(Cipher.DECRYPT_MODE, privateKey);
+      byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
+      return new String(decryptedBytes, StandardCharsets.UTF_8);
+    } catch (NoSuchAlgorithmException e) {
+      throw new RuntimeException("Decryption failed: Algorithm not found", e);
+    } catch (NoSuchPaddingException e) {
+      throw new RuntimeException("Decryption failed: Padding not found", e);
+    } catch (InvalidKeyException e) {
+      throw new RuntimeException("Decryption failed: Invalid key", e);
+    } catch (IllegalBlockSizeException e) {
+      throw new RuntimeException("Decryption failed: Illegal block size", e);
+    } catch (BadPaddingException e) {
+      throw new RuntimeException("Decryption failed: Bad padding", e);
+    }
   }
   
 }

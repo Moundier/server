@@ -45,12 +45,16 @@ public class PasswordService {
         if (older.isPresent()) {
             password = Password.builder()
             .id(password.getId())
-            .tag(password.getTag())
-            .title(password.getTitle())
+            .tag(cipher.encrypt(password.getTag()))
+            .title(cipher.encrypt(password.getTitle()))
             .storage(password.getStorage())
             .build();
 
-            return ResponseEntity.ok(this.repo.save(password));
+            Password obj = this.repo.save(password);
+            obj.setTag(cipher.decrypt(obj.getTag()));
+            obj.setTitle(cipher.decrypt(obj.getTitle()));
+
+            return ResponseEntity.ok(obj);
         }
 
         return ResponseEntity.notFound().build();
