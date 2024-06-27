@@ -7,15 +7,17 @@ import java.util.function.Function;
 
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.example.demo.entities.user.User;
+
 import io.jsonwebtoken.Claims;
 
 public abstract class JwtContract {
 
-	public abstract String generateToken(Map<String, Object> extraClaims, UserDetails userDetails); // Generates a JWT with extra custom claims and user details.
+	public abstract String generateToken(Map<String, Object> extraClaims, User userDetails); // Generates a JWT with extra custom claims and user details.
 
-	public abstract String generateAccessToken(UserDetails userDetails); // Generates a JWT based on the provided user details.
+	public abstract String generateAccessToken(User userDetails); // Generates a JWT based on the provided user details.
 
-	public abstract String generateRefreshToken(UserDetails userDetails);
+	public abstract String generateRefreshToken(User userDetails);
 
 	public abstract boolean isTokenValid(String token, UserDetails userDetails); // Checks if a token is valid for the provided user details.
 

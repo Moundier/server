@@ -28,7 +28,7 @@ public class UserService {
     return ResponseEntity.status(HttpStatus.OK).body(userRepo.findAll());
   }
 
-  public ResponseEntity<?> findUser(@NonNull Long id) {
+  public ResponseEntity<?> findById(@NonNull Long id) {
     return ResponseEntity.of(userRepo.findById(id));
   }
 

@@ -9,6 +9,8 @@ import java.util.function.Function;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.entities.user.User;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -38,23 +40,23 @@ public class JwtService extends JwtContract {
   // TODO: remove in-memory secret key
   private static final String SECRET_KEY = "DFatenFSYbaa+PaCOygVv8JtOc3d1UPv2BCIIeQ2TwGTA2EuhNQpGhszoUEN2bFR";
 
-  public String generateAccessToken(UserDetails userDetails) {
+  public String generateAccessToken(User userDetails) {
     return generateToken(new HashMap<>(), userDetails);
   }
 
-  public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+  public String generateToken(Map<String, Object> extraClaims, User userDetails) {
     return buildToken(extraClaims, userDetails, this.SET_01_MIN / 2);
   }
 
-  public String generateRefreshToken(UserDetails userDetails) {
+  public String generateRefreshToken(User userDetails) {
     return buildToken(new HashMap<>(), userDetails, this.SET_01_MIN * 10);
   }
 
-  public String buildToken(Map<String, Object> extraClaims, UserDetails userDetails, long time) {
+  public String buildToken(Map<String, Object> extraClaims, User userDetails, long time) {
     try {
       return Jwts.builder()
       .setClaims(extraClaims)
-      .setSubject(userDetails.getUsername()) // Subject is unique
+      .setSubject(userDetails.getId().toString()) // Subject is unique
       .setIssuer("localhost:9090")
       .setIssuedAt(new Date(System.currentTimeMillis()))
       .setExpiration(new Date(System.currentTimeMillis() + time))
