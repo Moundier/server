@@ -3,7 +3,6 @@ package com.example.demo.blueprint.security;
 import com.example.demo.blueprint.auth.AuthFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
@@ -27,8 +26,6 @@ public class SecurityConfig {
 
         System.out.println("Filter starts");
 
-        // TODO: secure routes based on authorities
-
         return http
         .csrf((csrf) -> csrf
             .disable()
@@ -42,23 +39,11 @@ public class SecurityConfig {
         .authorizeHttpRequests((authz) -> authz
         // How we secure those ones
 
-            // Can POST
-            .requestMatchers(HttpMethod.POST ,"/**").permitAll()
-            .requestMatchers(HttpMethod.POST ,"/auth/**").permitAll()
-            // .requestMatchers(HttpMethod.OPTIONS ,"/auth/**").permitAll()
-            // Course POST by ROLE_ADMIN
-            .requestMatchers(HttpMethod.POST, "/course/**").hasAuthority("ADMIN")
-            .requestMatchers(HttpMethod.PUT, "/course/**").hasAuthority("ADMIN")
-            .requestMatchers(HttpMethod.DELETE, "/course/**").hasAuthority("ADMIN")
-            // Chapter POST by ROLE_ADMIN
-            .requestMatchers(HttpMethod.POST, "/chapter/**").hasAuthority("ADMIN")
-            .requestMatchers(HttpMethod.PUT, "/chapter/**").hasAuthority("ADMIN")
-            .requestMatchers(HttpMethod.DELETE, "/chapter/**").hasAuthority("ADMIN")
-            // Lesson POST by ROLE_ADMIN
-            .requestMatchers(HttpMethod.POST, "/lesson/**").hasAuthority("ADMIN")
-            .requestMatchers(HttpMethod.PUT, "/lesson/**").hasAuthority("ADMIN")
-            .requestMatchers(HttpMethod.DELETE, "/lesson/**").hasAuthority("ADMIN")
-            // Only authenticated (ROLE_USER, ROLE_ADMIN)
+            .requestMatchers("/**").permitAll()
+            .requestMatchers("/auth/**").permitAll()
+            .requestMatchers("/course/**").hasAuthority("ADMIN")
+            .requestMatchers("/chapter/**").hasAuthority("ADMIN")
+            .requestMatchers("/lesson/**").hasAuthority("ADMIN")
             .anyRequest().authenticated()
         )
         .sessionManagement((session) -> session

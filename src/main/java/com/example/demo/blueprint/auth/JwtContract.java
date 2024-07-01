@@ -23,7 +23,7 @@ public abstract class JwtContract {
 
 	public abstract boolean isTokenExpired(String token); // Checks if a token has expired.
 
-	public abstract String extractUsername(String token); // Extracts the username from a token.
+	public abstract String extractSubject(String token); // Extracts the username from a token.
 
 	public abstract <T> T extractSpecificClaim(String token, Function<Claims, T> claimsResolver); // Extracts a specific claim using a resolver function.
 

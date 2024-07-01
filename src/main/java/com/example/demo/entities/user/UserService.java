@@ -3,6 +3,7 @@ package com.example.demo.entities.user;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -17,8 +18,11 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
 
   private final UserRepo userRepo;
-
   private final PasswordEncoder passwordEncoder;
+
+  public UserDetails contextById(User user) {
+    return (UserDetails) userRepo.findById(user.getId()).get();
+  }
 
   public ResponseEntity<?> findByEmail(String string) {
     return ResponseEntity.status(HttpStatus.OK).body(userRepo.findByEmail(string));

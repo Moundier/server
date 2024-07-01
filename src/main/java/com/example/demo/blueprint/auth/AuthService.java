@@ -117,7 +117,7 @@ public class AuthService {
     }
 
     refreshToken = authHeader.substring(7);
-    userEmail = jwtService.extractUsername(refreshToken);
+    userEmail = jwtService.extractSubject(refreshToken);
 
     if (userEmail != null) {
 

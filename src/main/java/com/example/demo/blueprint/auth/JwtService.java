@@ -70,7 +70,7 @@ public class JwtService extends JwtContract {
   }
 
   public boolean isTokenValid(String token, UserDetails userDetails) {
-    final String username = extractUsername(token);
+    final String username = extractSubject(token);
     return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
   }
 
@@ -78,7 +78,7 @@ public class JwtService extends JwtContract {
     return extractSpecificClaim(token, Claims::getExpiration).before(new Date()); // Todo: checks if token is expired
   }
 
-  public String extractUsername(String token) {
+  public String extractSubject(String token) {
     try {
       return extractSpecificClaim(token, Claims::getSubject);
     } catch (Exception e) {

@@ -37,7 +37,6 @@ public class UserRoute {
 
   @PostMapping
   public ResponseEntity<?> getUserById(@RequestBody User user) {
-    System.out.println(user);
     return userService.findById(user);
   }
 
