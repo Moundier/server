@@ -12,17 +12,14 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import com.example.demo.entities.user.Role;
 import com.example.demo.entities.user.User;
 import com.example.demo.entities.user.UserRepo;
-import com.example.demo.helpers.Jsonify;
-import com.example.demo.helpers.Colorify;
 import com.example.demo.blueprint.auth.AuthRoute.LoginDTO;
 import com.example.demo.blueprint.auth.AuthRoute.RegisterDTO;
 
 import lombok.RequiredArgsConstructor;
 
 import static com.example.demo.blueprint.auth.AuthRoute.TokensResponse;
-import static com.example.demo.blueprint.auth.AuthRoute.SignInResponse;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -49,7 +46,7 @@ public class AuthService {
       .email(request.email())
       .password(encodePassword(request.password()))
       .role(Role.USER)
-      .termsAcceptedDate(new Date(System.currentTimeMillis()))
+      .termsAcceptedDate(LocalDateTime.now().toString())
       .tutorialComplete(false)
       .build();
 
@@ -71,8 +68,6 @@ public class AuthService {
   public ResponseEntity<?> login(LoginDTO request) {
     Optional<User> user = userRepo.findByEmail(request.email());
 
-    System.out.println(user);
-
     if (user.isEmpty()) {
       String errorMessage = "User not found for email: " + request.email();
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
@@ -89,11 +84,8 @@ public class AuthService {
     String refreshToken = jwtService.generateRefreshToken(user.get()); // Todo: refactor in fronted
 
     TokensResponse tokensResponse = new TokensResponse(accessToken, refreshToken); 
-    SignInResponse signInResponse = new SignInResponse(user.get(), tokensResponse);
 
-    Colorify.info("LOGIN USER", Jsonify.toString(user));
-
-    return ResponseEntity.status(HttpStatus.OK).body(signInResponse);
+    return ResponseEntity.status(HttpStatus.OK).body(tokensResponse);
   }
 
   public ResponseEntity<?> privilege(RegisterDTO request) {

@@ -1,6 +1,5 @@
 package com.example.demo.entities.user;
 
-import java.util.Date;
 import java.util.Collection;
 import java.util.List;
 
@@ -47,8 +46,7 @@ public class User implements UserDetails {
     @Column(nullable = true)
     private Role role;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date termsAcceptedDate;
+    private String termsAcceptedDate;
 
     @AssertFalse
     private Boolean tutorialComplete;

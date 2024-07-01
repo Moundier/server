@@ -28,8 +28,8 @@ public class UserService {
     return ResponseEntity.status(HttpStatus.OK).body(userRepo.findAll());
   }
 
-  public ResponseEntity<?> findById(@NonNull Long id) {
-    return ResponseEntity.of(userRepo.findById(id));
+  public ResponseEntity<?> findById(User user) {
+    return ResponseEntity.of(userRepo.findById(user.getId()));
   }
 
   public ResponseEntity<?> updateUser(User newer) {

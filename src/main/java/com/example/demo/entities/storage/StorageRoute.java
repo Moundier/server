@@ -1,4 +1,5 @@
 package com.example.demo.entities.storage;
+import com.example.demo.entities.user.User;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -7,9 +8,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.example.demo.entities.user.User;
-import com.example.demo.helpers.Jsonify;
 
 import lombok.RequiredArgsConstructor;
 
@@ -32,8 +30,6 @@ public class StorageRoute {
 
     @PutMapping
     public ResponseEntity<?>updateStorage(@RequestBody Storage storage) {
-        Jsonify.toString(storage);
-
         return service.updateStorage(storage);
     }
 
