@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Collection;
 
 import org.springframework.http.HttpHeaders;
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -30,16 +31,15 @@ public class AuthFilter extends OncePerRequestFilter {
 
   @Override
   protected void doFilterInternal(
-      HttpServletRequest request,
-      HttpServletResponse response,
-      FilterChain filterChain
+    @NonNull HttpServletRequest request,
+    @NonNull HttpServletResponse response,
+    @NonNull FilterChain filterChain
   ) throws ServletException, IOException {
 
     final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
     final String subject;
     final String token;
 
-    System.out.println("------------------------------------------");
 
     if (authHeader == null || !authHeader.startsWith("Bearer ")) {
       System.out.println("Filter chain: HttpHeaders.AUTHORIZATION not found");
@@ -60,11 +60,11 @@ public class AuthFilter extends OncePerRequestFilter {
 
       if (jwtService.isTokenValid(token, user)) {
 
-        Grant grant = new Grant(user,null,user.getAuthorities());
+        Authz authz = new Authz(user,null,user.getAuthorities());
 
-        grant.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        authz.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-        SecurityContextHolder.getContext().setAuthentication(grant);
+        SecurityContextHolder.getContext().setAuthentication(authz);
       }
     }
 
@@ -72,13 +72,14 @@ public class AuthFilter extends OncePerRequestFilter {
   }
 
   void createReport(String token, String sub) {
+    System.out.println("-".repeat(20) + "[Interceptor]" + "-".repeat(20));
     System.out.println(token);
     System.out.println(sub); 
   }
 
-  private class Grant extends UsernamePasswordAuthenticationToken {
+  private class Authz extends UsernamePasswordAuthenticationToken {
 
-    public Grant(Object principal, Object credentials, Collection<? extends GrantedAuthority> authorities) {
+    public Authz(Object principal, Object credentials, Collection<? extends GrantedAuthority> authorities) {
       super(principal, credentials, authorities);
     }
   }

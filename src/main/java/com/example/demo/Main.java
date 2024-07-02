@@ -20,13 +20,13 @@ public class Main {
 
   public static void main(String[] args) {
     SpringApplication.run(Main.class, args);
+    Colorify.info("System Server", "");
   }
 
   @Bean
   CommandLineRunner runner() {
     return args -> {
 
-      Colorify.info(":: TIME UPSTART :: ", null);
       List<String> names = List.of("nami", "zoro", "usop","luff");
 
       for (String name: names) {
